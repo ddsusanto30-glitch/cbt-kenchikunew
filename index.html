@@ -598,7 +598,7 @@
         // -------------------------------------------------------------
         const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbz2-JQ6JtCCxpwsZrzimaYWZJ_gtGzqWSzzJFyMlgv-q_83XPgfwpMeuyjbiLRTyQK2/exec";
         const SUPABASE_STORAGE_URL = "https://supabase.com/dashboard/project/wgerkkjaufkfftxogkfl/editor/17613?schema=public";
-		
+        
 function perbaikiFurigana(teks) {
     if (!teks) return "";
     return String(teks)
@@ -615,7 +615,7 @@ function perbaikiFurigana(teks) {
         let currentIndex = 0;
         let userAnswers = {}; 
         let bookmarks = new Set();
-		let markedQuestions = new Set();
+        let markedQuestions = new Set();
         const optsList = ['A', 'B', 'C', 'D'];
 
         // DOM Cache
@@ -634,7 +634,8 @@ function perbaikiFurigana(teks) {
         const uiGrid = document.getElementById('ui-grid');
         const scrollArea = document.getElementById('scroll-area');
         const imageWrapper = document.getElementById('image-wrapper');
-		async function prosesLogin() {
+
+        async function prosesLogin() {
     let uInput = document.getElementById('input-user').value.trim();
     let pInput = document.getElementById('input-pass').value.trim();
     let errText = document.getElementById('pesan-error');
@@ -680,60 +681,8 @@ function perbaikiFurigana(teks) {
                 console.error(err);
             }
         }
-				function startTest(kategori) {
-    activeCategory = kategori;
-    currentIndex = 0;
-    userAnswers = {};
-    document.getElementById('menu-container').style.display = 'none';
-    document.getElementById('quiz-container').style.display = 'block';
-    renderQuestion();
-}
-
-        async function muatDataDariSheets() {
-    let cached = localStorage.getItem('kenchiku_cbt_cache');
-    let dataMentah;
-
-    // 1. Tampilkan cache langsung jika ada (Perhatikan: Tidak ada 'return' di sini)
-    if (cached) {
-        try {
-            dataMentah = JSON.parse(cached);
-            if (Array.isArray(dataMentah)) {
-                prosesDataSoal(dataMentah);
-            } else {
-                localStorage.removeItem('kenchiku_cbt_cache');
-            }
-        } catch (e) {
-            localStorage.removeItem('kenchiku_cbt_cache');
-        }
-    } else {
-        // Hanya tampilkan "Memuat..." jika cache benar-benar kosong (login pertama kali)
-        document.getElementById('badge-gakka').textContent = "Memuat...";
-        document.getElementById('badge-jitsugi').textContent = "Memuat...";
-    }
-
-    // 2. TETAP ambil data terbaru dari Google Sheets di latar belakang
-    try {
-        let res = await fetch(SHEET_API_URL);
-        dataMentah = await res.json();
         
-        // Simpan data terbaru ke cache untuk sesi berikutnya
-        localStorage.setItem('kenchiku_cbt_cache', JSON.stringify(dataMentah));
-        
-        // Update UI dengan data terbaru secara halus (silent update)
-        prosesDataSoal(dataMentah); 
-        console.log("Data berhasil diupdate dari server di latar belakang.");
-    } catch (err) {
-        console.error("Gagal mengambil data terbaru dari server:", err);
-        // Jika gagal fetch (misal tidak ada internet), abaikan jika sudah ada cache
-        if (!cached) {
-            document.getElementById('badge-gakka').textContent = "Error Koneksi";
-            document.getElementById('badge-jitsugi').textContent = "Error Koneksi";
-        }
-    }
-}
-
-    
-		// -------------------------------------------------------------
+        // -------------------------------------------------------------
         // 3. FUNGSI AMBIL DATA DARI GOOGLE SHEETS
         // -------------------------------------------------------------
         async function muatDataDariSheets() {
@@ -837,6 +786,7 @@ function prosesDataSoal(dataMentah) {
     } catch (error) {
         console.error("Gambar gagal dimuat", error);
     }
+}
 
         // -------------------------------------------------------------
         // 4. FUNGSI UI & LOGIKA KUIS
@@ -869,10 +819,13 @@ function prosesDataSoal(dataMentah) {
 
             currentIndex = 0;
             uiCat.textContent = category;
+            
+            // Perbaikan yang menggunakan view-home dan view-test sesuai HTML kamu
             viewHome.classList.remove('active');
             viewTest.classList.add('active');
             renderQuestion();
         }
+
         function getQId(q) {
             return `${q.kategori}-${q.nomor_soal}`;
         }
@@ -925,12 +878,12 @@ function prosesDataSoal(dataMentah) {
             if (ansRecord) {
     uiStatus.textContent = "Sudah Dijawab";
     uiStatus.className = "status-badge answered";
-    uiStatus.onclick = lompatKeBelumDijawab; // <-- Bagian ini yang lama
+    uiStatus.onclick = lompatKeBelumDijawab; 
     uiStatus.style.cursor = "pointer";
 } else {
     uiStatus.textContent = "Belum Dijawab";
     uiStatus.className = "status-badge";
-    uiStatus.onclick = lompatKeBelumDijawab; // <-- Bagian ini yang lama
+    uiStatus.onclick = lompatKeBelumDijawab; 
     uiStatus.style.cursor = "pointer";
 }
 
@@ -990,7 +943,7 @@ function prosesDataSoal(dataMentah) {
             else bookmarks.add(qId);
             renderQuestion();
         }
-		
+        
         function openModal(id) {
             document.getElementById(id).classList.add('active');
             if(id === 'mod-grid') buildGrid();
@@ -1071,7 +1024,7 @@ function toggleTerjemahan() {
         });
     }
 }
-		function resetSemuaJawaban() {
+        function resetSemuaJawaban() {
             if (confirm("Apakah Anda yakin ingin mereset semua jawaban yang telah dikerjakan?")) {
                 userAnswers = {};
                 currentIndex = 0;
@@ -1110,7 +1063,6 @@ function lompatKeBelumDijawab() {
         } else {
             alert("Hebat! Semua soal dalam kategori ini sudah dijawab.");
         }
-    }
 }
 
     window.addEventListener('DOMContentLoaded', () => {
