@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kenchiku CBT System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            /* Dark Mode Variables (Default) */
+            --bg-body: #050810;
+            --bg-app: #0B1120;
+            --bg-card: #151f32;
+            --bg-header: #0d1527;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #1e293b;
+            --accent-blue: #3b82f6;
+            --accent-emerald: #10b981;
+            --accent-purple: #a855f7;
+            --btn-bg: #1e293b;
+            --btn-hover: #334155;
+            
+            /* Validation Colors */
+            --correct-bg: #10b981;
+            --correct-border: #059669;
+            --correct-text: #ffffff;
+            
+            --wrong-bg: #ef4444;
+            --wrong-border: #dc2626;
+            --wrong-text: #ffffff;
+            
+            --shadow-app: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            --modal-bg: rgba(0, 0, 0, 0.75);
+        }
+
+        body.light-mode {
+            /* Light Mode Variables */
+            --bg-body: #e2e8f0;
+            --bg-app: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-header: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --btn-bg: #e2e8f0;
+            --btn-hover: #cbd5e1;
+            
+            --shadow-app: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            --modal-bg: rgba(15, 23, 42, 0.6);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.3s ease;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            height: 100vh;
+            height: 100dvh;
+            background-color: var(--bg-app);
+            box-shadow: var(--shadow-app);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: background-color 0.3s ease;
+        }
+
+        .scrollable {
+            overflow-y: auto;
+            flex-grow: 1;
+            -ms-overflow-style: none;  
+            scrollbar-width: none;  
+        }
+        .scrollable::-webkit-scrollbar {
+            display: none;
+        }
+
+        .view {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+        .view.active {
+            display: flex;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Home Header */
+        .header-home {
+            padding: 40px 24px 24px;
+            background-color: var(--bg-header);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        
+        .header-home p { font-size: 13px; color: var(--accent-blue); font-weight: 700; letter-spacing: 1px; }
+        .header-home h1 { font-size: 22px; font-weight: 700; margin-top: 4px; }
+
+        .theme-toggle {
+            background: var(--btn-bg);
+            border: none;
+            color: var(--text-main);
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+            transition: background 0.2s;
+        }
+        .theme-toggle:hover { background: var(--btn-hover); }
+
+        /* Cards */
+        .cards-container {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .main-card {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border-radius: 20px;
+            padding: 24px;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .main-card:active { transform: scale(0.97); }
+        
+        .main-card.jitsugi {
+            background: linear-gradient(135deg, #059669, #047857);
+            box-shadow: 0 8px 20px -4px rgba(5, 150, 105, 0.3);
+        }
+
+        /* Curved Accent */
+        .main-card::after {
+            content: '';
+            position: absolute;
+            top: -30px; right: -30px;
+            width: 140px; height: 140px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 60%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .main-card::before {
+            content: '';
+            position: absolute;
+            top: 10px; right: -20px;
+            width: 80px; height: 80px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+            position: relative; z-index: 2;
+        }
+        .card-header h2 { font-size: 24px; font-weight: 700; letter-spacing: -0.5px;}
+        .badge {
+            background: rgba(255,255,255,0.25);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px; font-weight: 600;
+            backdrop-filter: blur(4px);
+        }
+        .main-card p {
+            font-size: 14px; color: rgba(255,255,255,0.85); line-height: 1.5;
+            position: relative; z-index: 2;
+        }
+        
+        .footer {
+            text-align: center; padding: 20px; font-size: 13px;
+            color: var(--text-muted); font-weight: 500;
+        }
+
+        /* Test Header & Toolbar */
+        .test-header {
+            background-color: var(--bg-header);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 10;
+        }
+        .toolbar-top {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 20px;
+        }
+        .status-badge {
+            background: var(--btn-bg); color: var(--text-muted);
+            padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600;
+        }
+        .status-badge.answered { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); }
+        
+        .tools-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 8px 20px 12px;
+            gap: 10px;
+        }
+        .tool-group { display: flex; gap: 8px; flex-grow: 1; }
+        .tool-btn {
+            background: rgba(59, 130, 246, 0.1); color: var(--accent-blue);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 8px 12px; border-radius: 10px;
+            font-size: 13px; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .tool-btn.kotoba {
+            background: rgba(168, 85, 247, 0.1); color: var(--accent-purple);
+            border-color: rgba(168, 85, 247, 0.2);
+        }
+        
+        /* Progress */
+        .progress-container { padding: 0 20px 16px; }
+        .progress-text {
+            display: flex; justify-content: space-between;
+            font-size: 13px; font-weight: 600; margin-bottom: 8px;
+        }
+        .progress-text .cat { color: var(--text-muted); }
+        .progress-text .num { color: var(--accent-blue); }
+        .progress-track {
+            height: 6px; background: var(--border-color);
+            border-radius: 10px; overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%; background: var(--accent-blue);
+            width: 0%; transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        /* Question Area */
+        .question-area {
+            padding: 24px 20px 100px;
+        }
+        .image-wrapper {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 8px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            display: flex; justify-content: center; align-items: center;
+            min-height: 220px;
+        }
+        .image-wrapper img {
+            width: 100%;
+            height: auto;
+            max-height: 350px;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+        
+        .teks-pertanyaan {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            color: var(--text-main);
+        }
+
+        /* Options */
+        .options-grid { display: flex; flex-direction: column; gap: 12px; }
+        .option-btn {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            color: var(--text-main);
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 15px; font-weight: 500;
+            display: flex; align-items: center;
+            cursor: pointer; transition: all 0.2s ease;
+            text-align: left;
+        }
+        .option-btn:not(:disabled):active { transform: scale(0.98); }
+        
+        .opt-letter {
+            min-width: 36px; height: 36px;
+            background: var(--btn-bg); color: var(--text-main);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin-right: 16px; font-weight: 700;
+        }
+
+        /* Real-time Validation States */
+        .option-btn.correct {
+            background: var(--correct-bg);
+            border-color: var(--correct-border);
+            color: var(--correct-text);
+        }
+        .option-btn.correct .opt-letter {
+            background: rgba(255,255,255,0.25); color: var(--correct-text);
+        }
+        
+        .option-btn.wrong {
+            background: var(--wrong-bg);
+            border-color: var(--wrong-border);
+            color: var(--wrong-text);
+        }
+        .option-btn.wrong .opt-letter {
+            background: rgba(255,255,255,0.25); color: var(--wrong-text);
+        }
+
+        .option-btn:disabled { cursor: not-allowed; }
+        .option-btn:disabled:not(.correct):not(.wrong) { opacity: 0.5; }
+
+        .status-icon {
+            margin-left: auto;
+            font-size: 12px; font-weight: 700;
+            background: rgba(255,255,255,0.25);
+            padding: 4px 10px; border-radius: 6px;
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        .bottom-nav {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            background: var(--bg-header);
+            border-top: 1px solid var(--border-color);
+            padding: 16px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 10;
+        }
+        .nav-btn {
+            width: 50px; height: 50px; border-radius: 50%;
+            background: var(--btn-bg); color: var(--text-main);
+            border: none; font-size: 20px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        
+        .grid-btn {
+            background: transparent; border: none;
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            cursor: pointer; color: var(--text-muted);
+        }
+        .grid-btn i { font-size: 22px; color: var(--accent-blue); }
+        .grid-btn span { font-size: 11px; font-weight: 700; text-transform: uppercase; }
+
+        /* Modals */
+        .modal-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--modal-bg);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            display: none; justify-content: center; align-items: flex-end;
+        }
+        .modal-overlay.active { display: flex; }
+        
+        .modal-content {
+            background: var(--bg-header);
+            width: 100%; max-height: 85%;
+            border-top-left-radius: 24px; border-top-right-radius: 24px;
+            display: flex; flex-direction: column;
+            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        
+        .modal-content.centered {
+            width: 90%; max-height: 70%;
+            border-radius: 20px;
+            margin: auto;
+            transform: scale(0.9); opacity: 0;
+        }
+        .modal-overlay.active .modal-content.centered { transform: scale(1); opacity: 1; }
+
+        .modal-header {
+            padding: 20px; border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .modal-header h3 { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px;}
+        
+        .modal-body { padding: 20px; overflow-y: auto; }
+
+        /* Number Grid */
+        .grid-legend {
+            display: flex; justify-content: center; gap: 16px; margin-bottom: 20px;
+            font-size: 12px; font-weight: 600; color: var(--text-main);
+        }
+        .grid-legend span { display: flex; align-items: center; gap: 6px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        
+        .num-grid {
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
+            padding-bottom: 20px;
+        }
+        .grid-item {
+            aspect-ratio: 1; border-radius: 12px;
+            background: var(--btn-bg); color: var(--text-main);
+            border: 2px solid transparent;
+            font-weight: 700; font-size: 15px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; position: relative;
+        }
+        .grid-item.active-q { border-color: var(--accent-blue); background: var(--bg-card); }
+        
+        .grid-item.answered-correct {
+            background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald);
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+        .grid-item.answered-wrong {
+            background: rgba(239, 68, 68, 0.15); color: var(--wrong-bg);
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+        
+        .bm-indicator {
+            position: absolute; top: -4px; right: -4px;
+            color: #f59e0b; font-size: 12px;
+            background: var(--bg-header); border-radius: 50%; padding: 2px;
+        }
+
+        .kotoba-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+        .kotoba-item { background: var(--bg-card); padding: 16px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .kotoba-item h4 { font-size: 15px; color: var(--accent-purple); margin-bottom: 4px; }
+        .kotoba-item p { font-size: 14px; color: var(--text-main); }
+    </style>
+</head>
+<body>
+<div id="login-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 99999;">
+    <div style="background: white; padding: 35px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); width: 320px; text-align: center; font-family: sans-serif;">
+        <h2 style="margin-bottom: 10px; color: #333;">CBT Kenchiku</h2>
+        <p style="font-size: 13px; color: #666; margin-bottom: 20px;">Masukkan akun Anda</p>
+        <input type="text" id="input-user" placeholder="Username" style="width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
+        <input type="password" id="input-pass" placeholder="Password" style="width: 100%; padding: 12px; margin-bottom: 18px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
+        <button onclick="prosesLogin()" style="width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">MASUK</button>
+        <p id="pesan-error" style="color: red; font-size: 12px; margin-top: 12px;"></p>
+    </div>
+</div>
+    <div class="app-container">
+        <!-- ================= LANDING VIEW ================= -->
+        <div id="view-home" class="view active">
+            <div class="header-home">
+                <div>
+                    <p>CBT SYSTEM</p>
+                    <h1>MENU BIDANG KENCHIKU</h1>
+                </div>
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+                    <i class="fas fa-moon" id="icon-theme-home"></i>
+                </button>
+            </div>
+
+            <div class="cards-container scrollable">
+                <div class="main-card" onclick="startTest('GAKKA')">
+                    <div class="card-header">
+                        <h2>GAKKA</h2>
+                        <span class="badge" id="badge-gakka">Memuat...</span>
+                    </div>
+                    <p>Menu materi teori, latihan soal, dan simulasi CBT bidang Kenchiku Gakka.</p>
+                </div>
+
+                <div class="main-card jitsugi" onclick="startTest('JITSUGI')">
+                    <div class="card-header">
+                        <h2>JITSUGI</h2>
+                        <span class="badge" id="badge-jitsugi">Memuat...</span>
+                    </div>
+                    <p>Menu praktik kerja lapangan, simulasi teknis, dan latihan soal Jitsugi.</p>
+                </div>
+            </div>
+            <div class="footer">
+                &copy; 2026 Kenchiku CBT System
+            </div>
+        </div>
+
+        <!-- ================= TEST VIEW ================= -->
+        <div id="view-test" class="view">
+            <div class="test-header">
+                <div class="toolbar-top">
+                    <button class="theme-toggle" style="width:40px; height:40px;" onclick="goHome()" title="Kembali">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div class="status-badge" id="ui-status">Belum Dijawab</div>
+                    <button class="theme-toggle" style="width:40px; height:40px;" onclick="toggleBookmark()" id="btn-bm" title="Tandai">
+                        <i class="far fa-star"></i>
+                    </button>
+                </div>
+                
+                <div class="tools-row">
+                    <div class="tool-group">
+                        <button class="tool-btn" onclick="toggleTerjemahan()">
+    <i class="fas fa-language"></i> Terjemahan
+</button>
+                    </div>
+                    <button class="theme-toggle" style="width:36px; height:36px;" onclick="toggleTheme()">
+                        <i class="fas fa-moon" id="icon-theme-test" style="font-size: 14px;"></i>
+                    </button>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-text">
+                        <span class="cat" id="ui-cat">GAKKA</span>
+                        <span class="num" id="ui-prog-text">Progress 0 / 0</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="ui-prog-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-area scrollable" id="scroll-area">
+                <!-- Wrapper Gambar -->
+                <div class="image-wrapper" id="image-wrapper" style="display: none;">
+                    <img id="ui-image" src="" alt="Soal">
+                </div>
+                
+                <!-- Wrapper Teks Soal -->
+                <div class="teks-pertanyaan" id="ui-pertanyaan">
+                    <!-- Teks pertanyaan akan muncul di sini jika ada -->
+                </div>
+
+                <!-- Opsi Jawaban -->
+                <div class="options-grid" id="ui-options">
+                    <!-- Options injected by JS -->
+                </div>
+            </div>
+
+            <div class="bottom-nav">
+                <button class="nav-btn" id="btn-prev" onclick="navigate(-1)">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="grid-btn" onclick="openModal('mod-grid')">
+                    <i class="fas fa-th"></i>
+                    <span>Nomor Soal</span>
+                </button>
+                <button class="nav-btn" id="btn-next" onclick="navigate(1)">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= MODALS ================= -->
+        <div class="modal-overlay" id="mod-grid" onclick="closeOnOverlay(event, 'mod-grid')">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-th"></i> Navigasi Soal</h3>
+                    <button class="theme-toggle" style="width:36px;height:36px;" onclick="closeModal('mod-grid')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body scrollable">
+                    <div class="grid-legend">
+                        <span><div class="dot" style="background: var(--accent-emerald);"></div> Benar</span>
+                        <span><div class="dot" style="background: var(--wrong-bg);"></div> Salah</span>
+                        <span><div class="dot" style="background: var(--btn-bg); border: 1px solid var(--text-muted);"></div> Belum</span>
+                    </div>
+                    <div class="num-grid" id="ui-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="mod-translate" onclick="closeOnOverlay(event, 'mod-translate')">
+            <div class="modal-content centered">
+                <div class="modal-header">
+                    <h3 style="color: var(--accent-blue);"><i class="fas fa-language"></i> Terjemahan</h3>
+                    <button class="theme-toggle" style="width:36px;height:36px;" onclick="closeModal('mod-translate')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p style="color: var(--text-main); font-style: italic; line-height: 1.6; text-align: center;">
+                        "Simulasi terjemahan Bahasa Indonesia untuk soal bergambar. Fitur ini akan menampilkan arti teks bahasa Jepang yang ada di dalam gambar soal."
+                    </p>
+                </div>
+            </div>
+        </div>
+    <!-- ================= JAVASCRIPT ================= -->
+    <script>
+        // -------------------------------------------------------------
+        // 1. MASUKKAN URL GOOGLE SHEETS & SUPABASE KAMU DI SINI
+        // -------------------------------------------------------------
+        const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbz2-JQ6JtCCxpwsZrzimaYWZJ_gtGzqWSzzJFyMlgv-q_83XPgfwpMeuyjbiLRTyQK2/exec";
+        const SUPABASE_STORAGE_URL = "https://supabase.com/dashboard/project/wgerkkjaufkfftxogkfl/editor/17613?schema=public";
+		
+function perbaikiFurigana(teks) {
+    if (!teks) return "";
+    return String(teks)
+        // 1. Membersihkan format tag ruby kosong dari Google Sheets
+        .replace(/([^\(\<]+)\(<ruby>([^<]+)<rt><\/rt><\/ruby>\)/g, '<ruby>$1<rt>$2</rt></ruby>')
+        // 2. Mengubah format huruf(cara_baca) di soal maupun opsi menjadi furigana HTML
+        .replace(/([一-龥ぁ-んァ-ンー]+)\(([^)]+)\)/g, '<ruby>$1<rt>$2</rt></ruby>');
+}
+        // -------------------------------------------------------------
+        // 2. STATE APLIKASI
+        // -------------------------------------------------------------
+        let db = []; 
+        let activeQuestions = [];
+        let currentIndex = 0;
+        let userAnswers = {}; 
+        let bookmarks = new Set();
+		let markedQuestions = new Set();
+        const optsList = ['A', 'B', 'C', 'D'];
+
+        // DOM Cache
+        const viewHome = document.getElementById('view-home');
+        const viewTest = document.getElementById('view-test');
+        const uiImage = document.getElementById('ui-image');
+        const uiPertanyaan = document.getElementById('ui-pertanyaan');
+        const uiOptions = document.getElementById('ui-options');
+        const uiCat = document.getElementById('ui-cat');
+        const uiProgText = document.getElementById('ui-prog-text');
+        const uiProgBar = document.getElementById('ui-prog-bar');
+        const uiStatus = document.getElementById('ui-status');
+        const btnBm = document.getElementById('btn-bm');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+        const uiGrid = document.getElementById('ui-grid');
+        const scrollArea = document.getElementById('scroll-area');
+        const imageWrapper = document.getElementById('image-wrapper');
+		async function prosesLogin() {
+    let uInput = document.getElementById('input-user').value.trim();
+    let pInput = document.getElementById('input-pass').value.trim();
+    let errText = document.getElementById('pesan-error');
+
+            if (!uInput || !pInput) {
+                errText.textContent = "Isi username dan password!";
+                return;
+            }
+
+            errText.textContent = "Memeriksa...";
+
+            let deviceId = localStorage.getItem('cbt_device_id');
+            if (!deviceId) {
+                deviceId = 'hp_' + Math.random().toString(36).substring(2) + Date.now();
+                localStorage.setItem('cbt_device_id', deviceId);
+            }
+
+            try {
+                let res = await fetch(SHEET_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: 'login',
+                        user: uInput,
+                        pass: pInput,
+                        device_id: deviceId
+                    })
+                });
+                
+                let hasil = await res.json();
+
+                if (hasil.success === true) {
+                    sessionStorage.setItem('cbt_sudah_login', 'true');
+                    document.getElementById('login-overlay').style.display = 'none';
+                    muatDataDariSheets();
+                } else {
+                    errText.textContent = hasil.message || "Username/Password salah!";
+                    alert("Gagal: " + (hasil.message || "Username/Password salah!"));
+                }
+            } catch (err) {
+                errText.textContent = "Gagal terhubung ke server.";
+                alert("Error koneksi: " + err.message);
+                console.error(err);
+            }
+        }
+				function startTest(kategori) {
+    activeCategory = kategori;
+    currentIndex = 0;
+    userAnswers = {};
+    document.getElementById('menu-container').style.display = 'none';
+    document.getElementById('quiz-container').style.display = 'block';
+    renderQuestion();
+}
+
+        async function muatDataDariSheets() {
+    let cached = localStorage.getItem('kenchiku_cbt_cache');
+    let dataMentah;
+
+    // 1. Tampilkan cache langsung jika ada (Perhatikan: Tidak ada 'return' di sini)
+    if (cached) {
+        try {
+            dataMentah = JSON.parse(cached);
+            if (Array.isArray(dataMentah)) {
+                prosesDataSoal(dataMentah);
+            } else {
+                localStorage.removeItem('kenchiku_cbt_cache');
+            }
+        } catch (e) {
+            localStorage.removeItem('kenchiku_cbt_cache');
+        }
+    } else {
+        // Hanya tampilkan "Memuat..." jika cache benar-benar kosong (login pertama kali)
+        document.getElementById('badge-gakka').textContent = "Memuat...";
+        document.getElementById('badge-jitsugi').textContent = "Memuat...";
+    }
+
+    // 2. TETAP ambil data terbaru dari Google Sheets di latar belakang
+    try {
+        let res = await fetch(SHEET_API_URL);
+        dataMentah = await res.json();
+        
+        // Simpan data terbaru ke cache untuk sesi berikutnya
+        localStorage.setItem('kenchiku_cbt_cache', JSON.stringify(dataMentah));
+        
+        // Update UI dengan data terbaru secara halus (silent update)
+        prosesDataSoal(dataMentah); 
+        console.log("Data berhasil diupdate dari server di latar belakang.");
+    } catch (err) {
+        console.error("Gagal mengambil data terbaru dari server:", err);
+        // Jika gagal fetch (misal tidak ada internet), abaikan jika sudah ada cache
+        if (!cached) {
+            document.getElementById('badge-gakka').textContent = "Error Koneksi";
+            document.getElementById('badge-jitsugi').textContent = "Error Koneksi";
+        }
+    }
+}
+
+    
+		// -------------------------------------------------------------
+        // 3. FUNGSI AMBIL DATA DARI GOOGLE SHEETS
+        // -------------------------------------------------------------
+        async function muatDataDariSheets() {
+    let cached = localStorage.getItem('kenchiku_cbt_cache');
+    let dataMentah;
+
+    // 1. Jika ada cache, langsung proses dan tampilkan instan tanpa tulisan "Memuat..."
+   if (cached) {
+        try {
+            dataMentah = JSON.parse(cached);
+            if (Array.isArray(dataMentah)) {
+                prosesDataSoal(dataMentah);
+                return;
+            } else {
+                localStorage.removeItem('kenchiku_cbt_cache');
+            }
+        } catch (e) {
+            localStorage.removeItem('kenchiku_cbt_cache');
+        }
+    }
+
+    // 2. Jika belum ada cache sama sekali, baru tampilkan "Memuat..." dan ambil dari Google Sheets
+    document.getElementById('badge-gakka').textContent = "Memuat...";
+    document.getElementById('badge-jitsugi').textContent = "Memuat...";
+
+    try {
+        let res = await fetch(SHEET_API_URL);
+        dataMentah = await res.json();
+        localStorage.setItem('kenchiku_cbt_cache', JSON.stringify(dataMentah));
+        prosesDataSoal(dataMentah);
+    } catch (err) {
+        console.error(err);
+        document.getElementById('badge-gakka').textContent = "Error";
+        document.getElementById('badge-jitsugi').textContent = "Error";
+    }
+}
+
+// Fungsi pembantu pemetaan data agar kodenya rapi
+function prosesDataSoal(dataMentah) {
+    if (!Array.isArray(dataMentah)) return;
+
+    db = dataMentah.map((rawItem, index) => {
+        let item = {};
+        for (let key in rawItem) {
+            let cleanKey = String(key).toLowerCase().trim().replace(/\s+/g, '_');
+            item[cleanKey] = rawItem[key];
+        }
+
+        const getVal = (keys) => {
+            for (let k of keys) {
+                if (item[k] !== undefined && item[k] !== null && String(item[k]).trim() !== "") {
+                    return item[k];
+                }
+            }
+            return "";
+        };
+
+        let kat = getVal(['kategori', 'kategori_soal']);
+        if (!kat) kat = 'GAKKA';
+
+        let imgRaw = getVal(['gambar', 'image']);
+        let imgUrl = "";
+        if (imgRaw) {
+            imgUrl = imgRaw.startsWith('http') ? imgRaw : SUPABASE_STORAGE_URL + imgRaw;
+        }
+
+        return {
+            nomor_soal: getVal(['nomor_soal', 'no', 'nomor']) || (index + 1),
+            kategori: String(kat).toUpperCase().trim(),
+            pertanyaan: perbaikiFurigana(getVal(['soal', 'pertanyaan'])),
+            opsi: [
+                perbaikiFurigana(getVal(['opsi_a', 'opsia', 'pilihan_a', 'a'])),
+                perbaikiFurigana(getVal(['opsi_b', 'opsib', 'pilihan_b', 'b'])),
+                perbaikiFurigana(getVal(['opsi_c', 'opsic', 'pilihan_c', 'c'])),
+                perbaikiFurigana(getVal(['opsi_d', 'opsid', 'pilihan_d', 'd']))
+            ],
+            jawaban_benar: String(getVal(['kunci', 'jawaban_benar', 'kunci_jawaban']) || 'A').toUpperCase().trim(),
+            gambar_url: imgUrl,
+            terjemahan_pertanyaan: getVal(['terjemahansoal', 'terjemahan_soal', 'terjemahan', 'soal_indo']),
+            terjemahan_opsi: [
+                getVal(['terjemahanopsia', 'terjemahan_opsi_a']),
+                getVal(['terjemahanopsib', 'terjemahan_opsi_b']),
+                getVal(['terjemahanopsic', 'terjemahan_opsi_c']),
+                getVal(['terjemahanopsid', 'terjemahan_opsi_d'])
+            ]
+        };
+    });
+
+    const gakka = db.filter(q => q.kategori === 'GAKKA').length;
+    const jitsugi = db.filter(q => q.kategori === 'JITSUGI').length;
+    document.getElementById('badge-gakka').textContent = `${gakka} Soal`;
+    document.getElementById('badge-jitsugi').textContent = `${jitsugi} Soal`;
+
+    try {
+        db.forEach(q => {
+            if (q.gambar_url && q.gambar_url !== SUPABASE_STORAGE_URL) {
+                const img = new Image();
+                img.src = q.gambar_url;
+            }
+        });
+    } catch (error) {
+        console.error("Gambar gagal dimuat", error);
+    }
+
+        // -------------------------------------------------------------
+        // 4. FUNGSI UI & LOGIKA KUIS
+        // -------------------------------------------------------------
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            const iconClass = isLight ? 'fa-sun' : 'fa-moon';
+            document.getElementById('icon-theme-home').className = `fas ${iconClass}`;
+            document.getElementById('icon-theme-test').className = `fas ${iconClass}`;
+        }
+
+        function goHome() {
+            viewTest.classList.remove('active');
+            viewHome.classList.add('active');
+        }
+
+        async function startTest(category) {
+            if(db.length === 0) {
+                alert("Data sedang dimuat dari Google Sheets atau terjadi error koneksi.");
+                return;
+            }
+
+            activeQuestions = db.filter(q => q.kategori === category.toUpperCase());
+            
+            if(activeQuestions.length === 0) {
+                alert(`Belum ada soal untuk kategori ${category} di Google Sheets.`);
+                return;
+            }
+
+            currentIndex = 0;
+            uiCat.textContent = category;
+            viewHome.classList.remove('active');
+            viewTest.classList.add('active');
+            renderQuestion();
+        }
+        function getQId(q) {
+            return `${q.kategori}-${q.nomor_soal}`;
+        }
+
+        function renderQuestion() {
+            const q = activeQuestions[currentIndex];
+            const total = activeQuestions.length;
+            const qId = getQId(q);
+            const ansRecord = userAnswers[qId];
+
+            uiProgText.textContent = `Progress ${currentIndex + 1} / ${total}`;
+            uiProgBar.style.width = `${((currentIndex + 1) / total) * 100}%`;
+
+            // Atur Gambar (Sembunyikan kalau tidak ada)
+            if (q.gambar_url && q.gambar_url !== SUPABASE_STORAGE_URL) {
+                uiImage.src = q.gambar_url;
+                imageWrapper.style.display = 'flex';
+            } else {
+                imageWrapper.style.display = 'none';
+            }
+
+            // Atur Teks Pertanyaan (Sembunyikan kalau tidak ada)
+            if (q.pertanyaan && q.pertanyaan.trim() !== "") {
+                uiPertanyaan.innerHTML = q.pertanyaan;
+                uiPertanyaan.style.display = 'block';
+            } else {
+                uiPertanyaan.style.display = 'none';
+            }
+
+            btnPrev.disabled = currentIndex === 0;
+            btnNext.disabled = currentIndex === total - 1;
+
+            if(bookmarks.has(qId)) {
+                btnBm.innerHTML = '<i class="fas fa-star" style="color: #f59e0b;"></i>';
+            } else {
+                btnBm.innerHTML = '<i class="far fa-star"></i>';
+            }
+// Tambahkan tombol reset otomatis di samping tombol bintang
+            let bookmarkContainer = btnBm.parentElement;
+            let existingReset = document.getElementById('btn-reset-auto');
+            if (!existingReset && bookmarkContainer) {
+                let resetBtn = document.createElement('button');
+                resetBtn.id = 'btn-reset-auto';
+                resetBtn.innerHTML = '<i class="fas fa-redo"></i>';
+                resetBtn.title = 'Reset Semua Jawaban';
+                resetBtn.onclick = resetSemuaJawaban;
+                resetBtn.style.cssText = "background: rgba(220, 38, 38, 0.2); border: 1px solid #dc2626; color: #f87171; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; margin-left: 8px;";
+                bookmarkContainer.appendChild(resetBtn);
+            }
+            if (ansRecord) {
+    uiStatus.textContent = "Sudah Dijawab";
+    uiStatus.className = "status-badge answered";
+    uiStatus.onclick = lompatKeBelumDijawab; // <-- Bagian ini yang lama
+    uiStatus.style.cursor = "pointer";
+} else {
+    uiStatus.textContent = "Belum Dijawab";
+    uiStatus.className = "status-badge";
+    uiStatus.onclick = lompatKeBelumDijawab; // <-- Bagian ini yang lama
+    uiStatus.style.cursor = "pointer";
+}
+
+            // Render Opsi Jawaban
+            uiOptions.innerHTML = '';
+            optsList.forEach((letter, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                
+                // Cek teks dari Google Sheets (opsi_a, opsi_b), jika kosong tampilkan 'Pilihan A'
+                const teksOpsi = (q.opsi && q.opsi[idx]) ? q.opsi[idx] : `Pilihan ${letter}`;
+                
+                btn.innerHTML = `<div class="opt-letter">${letter}</div> <div>${teksOpsi}</div>`;
+                
+                if(ansRecord) {
+                    btn.disabled = true;
+                    if(letter === ansRecord.correctAns) {
+                        btn.classList.add('correct');
+                        btn.innerHTML += `<div class="status-icon">⭕ BENAR</div>`;
+                    } else if(letter === ansRecord.selected && !ansRecord.isCorrect) {
+                        btn.classList.add('wrong');
+                    }
+                } else {
+                    btn.onclick = () => selectAnswer(letter, q.jawaban_benar);
+                }
+                
+                uiOptions.appendChild(btn);
+            });
+
+            scrollArea.scrollTop = 0;
+        }
+
+        function selectAnswer(selected, correct) {
+            const q = activeQuestions[currentIndex];
+            const qId = getQId(q);
+            
+            userAnswers[qId] = {
+                selected: selected,
+                isCorrect: (selected === correct),
+                correctAns: correct
+            };
+            
+            renderQuestion(); 
+        }
+
+        function navigate(dir) {
+            const nextIdx = currentIndex + dir;
+            if(nextIdx >= 0 && nextIdx < activeQuestions.length) {
+                currentIndex = nextIdx;
+                renderQuestion();
+            }
+        }
+
+        function toggleBookmark() {
+            const qId = getQId(activeQuestions[currentIndex]);
+            if(bookmarks.has(qId)) bookmarks.delete(qId);
+            else bookmarks.add(qId);
+            renderQuestion();
+        }
+		
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+            if(id === 'mod-grid') buildGrid();
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function closeOnOverlay(e, id) {
+            if(e.target.id === id) closeModal(id);
+        }
+
+        function buildGrid() {
+            uiGrid.innerHTML = '';
+            activeQuestions.forEach((q, idx) => {
+                const qId = getQId(q);
+                const btn = document.createElement('div');
+                btn.className = 'grid-item';
+                btn.textContent = idx + 1;
+                
+                if(idx === currentIndex) btn.classList.add('active-q');
+                
+                const ans = userAnswers[qId];
+                if(ans) {
+                    btn.classList.add(ans.isCorrect ? 'answered-correct' : 'answered-wrong');
+                }
+                
+                if(bookmarks.has(qId)) {
+                    const bm = document.createElement('i');
+                    bm.className = 'fas fa-star bm-indicator';
+                    btn.appendChild(bm);
+                }
+
+                btn.onclick = () => {
+                    currentIndex = idx;
+                    closeModal('mod-grid');
+                    renderQuestion();
+                };
+                
+                uiGrid.appendChild(btn);
+            });
+        }
+let statusTerjemahan = false;
+
+function toggleTerjemahan() {
+    statusTerjemahan = !statusTerjemahan;
+    
+    let elSoal = document.getElementById('ui-pertanyaan'); 
+    let tombolOpsi = document.querySelectorAll('.option-btn'); 
+    let soalSekarang = activeQuestions[currentIndex]; 
+
+    if (!soalSekarang) return;
+
+    if (statusTerjemahan) {
+        // Ubah ke Bahasa Indonesia
+        if (elSoal && soalSekarang.terjemahan_pertanyaan) {
+            elSoal.innerHTML = soalSekarang.terjemahan_pertanyaan;
+        }
+        
+        tombolOpsi.forEach((btn, idx) => {
+            let textDiv = btn.querySelector('div:nth-child(2)');
+            if (textDiv && soalSekarang.terjemahan_opsi && soalSekarang.terjemahan_opsi[idx]) {
+                textDiv.innerHTML = soalSekarang.terjemahan_opsi[idx];
+            }
+        });
+    } else {
+        // Kembalikan ke Bahasa Jepang Asli
+        if (elSoal && soalSekarang.pertanyaan) {
+            elSoal.innerHTML = soalSekarang.pertanyaan;
+        }
+        
+        tombolOpsi.forEach((btn, idx) => {
+            let textDiv = btn.querySelector('div:nth-child(2)');
+            if (textDiv && soalSekarang.opsi && soalSekarang.opsi[idx]) {
+                textDiv.innerHTML = soalSekarang.opsi[idx];
+            }
+        });
+    }
+}
+		function resetSemuaJawaban() {
+            if (confirm("Apakah Anda yakin ingin mereset semua jawaban yang telah dikerjakan?")) {
+                userAnswers = {};
+                currentIndex = 0;
+                renderQuestion();
+                if (typeof buildGrid === 'function') {
+                    buildGrid();
+                }
+               alert("Semua jawaban berhasil direset!");
+}
+}
+
+function lompatKeBelumDijawab() {
+            let targetIdx = -1;
+            for (let i = currentIndex + 1; i < activeQuestions.length; i++) {
+                let qId = getQId(activeQuestions[i]);
+                if (!userAnswers[qId]) {
+                    targetIdx = i;
+                    break;
+                }
+            }
+            
+            // Jika tidak ketemu di depan, putar dari awal
+            if (targetIdx === -1) {
+                for (let i = 0; i <= currentIndex; i++) {
+                    let qId = getQId(activeQuestions[i]);
+                    if (!userAnswers[qId]) {
+                        targetIdx = i;
+                        break;
+                    }
+                }
+            }
+            
+            if (targetIdx !== -1) {
+            currentIndex = targetIdx;
+            renderQuestion();
+        } else {
+            alert("Hebat! Semua soal dalam kategori ini sudah dijawab.");
+        }
+    }
+}
+
+    window.addEventListener('DOMContentLoaded', () => {
+        if (sessionStorage.getItem('cbt_sudah_login') === 'true') {
+            document.getElementById('login-overlay').style.display = 'none';
+            muatDataDariSheets();
+        } else {
+            document.getElementById('login-overlay').style.display = 'flex';
+        }
+    });
+</script>
+</body>
+</html>
