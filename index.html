@@ -675,7 +675,26 @@ function perbaikiFurigana(teks) {
         const uiGrid = document.getElementById('ui-grid');
         const scrollArea = document.getElementById('scroll-area');
         const imageWrapper = document.getElementById('image-wrapper');
+        // Fungsi untuk merapikan nama HP dari data mentah browser
+function dapatkanNamaHPRapi() {
+    let ua = navigator.userAgent;
+    let os = "OS Tidak Diketahui";
+    let browser = "Browser Lain";
 
+    // Deteksi Sistem Operasi
+    if (/android/i.test(ua)) os = "Android";
+    else if (/iPad|iPhone|iPod/i.test(ua)) os = "iOS (iPhone/iPad)";
+    else if (/Windows NT/i.test(ua)) os = "Windows";
+    else if (/Mac OS X/i.test(ua)) os = "Mac";
+
+    // Deteksi Browser
+    if (/Edg/i.test(ua)) browser = "Edge";
+    else if (/Chrome/i.test(ua)) browser = "Chrome";
+    else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) browser = "Safari";
+    else if (/Firefox/i.test(ua)) browser = "Firefox";
+
+    return os + " - " + browser;
+}
         async function prosesLogin() {
             let uInput = document.getElementById('input-user').value.trim();
             let pInput = document.getElementById('input-pass').value.trim();
@@ -696,7 +715,7 @@ function perbaikiFurigana(teks) {
             }
 
             // 2. Tangkap Info Perangkat (Nama HP / Browser)
-            let deviceInfo = navigator.userAgent || "Tidak diketahui";
+            let deviceInfo = dapatkanNamaHPRapi();
 
             // 3. Tangkap Alamat IP (menggunakan API publik gratis ipify)
             let ipAddress = "Tidak diketahui";
