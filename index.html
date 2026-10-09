@@ -295,7 +295,7 @@
             background: var(--bg-card);
             border: 2px solid var(--border-color);
             color: var(--text-main);
-            padding: 22px 25px;
+            padding: 16px 20px;
             border-radius: 17px;
             font-size: 25px; font-weight: 500;
             display: flex; align-items: flex-start;
@@ -303,7 +303,8 @@
             text-align: left;
 			line-height: 1.7;
 			height: auto !important;
-			min-height: 70px;
+			min-height: unset !important;
+			overflow: visible;
         }
         .option-btn:not(:disabled):active { transform: scale(0.98); }
         
@@ -316,6 +317,9 @@
 			margin-top: 4px;
 			flex-shrink: 0;
         }
+		.option-btn > div, .option-btn > span {
+    flex: 1;
+    word-break: break-word;
 
         /* Real-time Validation States */
         .option-btn.correct {
