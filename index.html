@@ -947,7 +947,7 @@ function prosesDataSoal(dataMentah) {
                     btn.disabled = true;
                     if(letter === ansRecord.correctAns) {
                         btn.classList.add('correct');
-                        btn.innerHTML += `<div class="status-icon">⭕ BENAR</div>`;
+                        //btn.innerHTML += `<div class="status-icon">⭕ BENAR</div>`;
                     } else if(letter === ansRecord.selected && !ansRecord.isCorrect) {
                         btn.classList.add('wrong');
                     }
