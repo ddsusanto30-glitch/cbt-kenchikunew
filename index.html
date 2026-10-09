@@ -282,7 +282,7 @@
         }
         
         .teks-pertanyaan {
-            font-size: 25px;
+            font-size: 20px;
             font-weight: 600;
             margin-bottom: 20px;
             line-height: 1.5;
@@ -293,17 +293,14 @@
         .options-grid { display: flex; flex-direction: column; gap: 12px; }
         .option-btn {
             background: var(--bg-card);
-            border: 2px solid var(--border-color);
+            border: 20px solid var(--border-color);
             color: var(--text-main);
             padding: 16px;
             border-radius: 14px;
-            font-size: 25px; font-weight: 500;
-            display: flex; align-items: flex-start;
+            font-size: 15px; font-weight: 500;
+            display: flex; align-items: center;
             cursor: pointer; transition: all 0.2s ease;
             text-align: left;
-			line-height: 1.7;
-			height: auto !important;
-			overflow: visible;
         }
         .option-btn:not(:disabled):active { transform: scale(0.98); }
         
@@ -313,14 +310,6 @@
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             margin-right: 16px; font-weight: 700;
-			margin-top: 4px;
-			flex-shrink: 0;
-        }
-		.option-btn > div, .option-btn > span {
-            flex: 1;
-            word-break: break-word;
-            white-space: normal;
-            overflow-wrap: break-word;
         }
 
         /* Real-time Validation States */
