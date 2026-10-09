@@ -472,6 +472,17 @@
         .kotoba-item { background: var(--bg-card); padding: 16px; border-radius: 12px; border: 1px solid var(--border-color); }
         .kotoba-item h4 { font-size: 15px; color: var(--accent-purple); margin-bottom: 4px; }
         .kotoba-item p { font-size: 14px; color: var(--text-main); }
+
+        .kotoba-item { background: var(--bg-card); padding: 16px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .kotoba-item h4 { font-size: 15px; color: var(--accent-purple); margin-bottom: 4px; }
+        .kotoba-item p { font-size: 14px; color: var(--text-main); }
+
+        .teks-indo {
+            font-style: italic;
+            font-weight: 400 !important;
+            line-height: 1.5;
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -1049,13 +1060,13 @@ function toggleTerjemahan() {
     if (statusTerjemahan) {
         // Ubah ke Bahasa Indonesia
         if (elSoal && soalSekarang.terjemahan_pertanyaan) {
-            elSoal.innerHTML = soalSekarang.terjemahan_pertanyaan;
+            elSoal.innerHTML = `<span class="teks-indo">${soalSekarang.terjemahan_pertanyaan}</span>`;
         }
         
         tombolOpsi.forEach((btn, idx) => {
             let textDiv = btn.querySelector('div:nth-child(2)');
             if (textDiv && soalSekarang.terjemahan_opsi && soalSekarang.terjemahan_opsi[idx]) {
-                textDiv.innerHTML = soalSekarang.terjemahan_opsi[idx];
+                textDiv.innerHTML = `<span class="teks-indo">${soalSekarang.terjemahan_opsi[idx]}</span>`;
             }
         });
     } else {
