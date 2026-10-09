@@ -731,7 +731,7 @@ function perbaikiFurigana(teks) {
             dataMentah = JSON.parse(cached);
             if (Array.isArray(dataMentah)) {
                 prosesDataSoal(dataMentah);
-                return;
+				
             } else {
                 localStorage.removeItem('kenchiku_cbt_cache');
             }
@@ -739,11 +739,11 @@ function perbaikiFurigana(teks) {
             localStorage.removeItem('kenchiku_cbt_cache');
         }
     }
-
+	}else{
     // 2. Jika belum ada cache sama sekali, baru tampilkan "Memuat..." dan ambil dari Google Sheets
     document.getElementById('badge-gakka').textContent = "Memuat...";
     document.getElementById('badge-jitsugi').textContent = "Memuat...";
-
+	}
     try {
         let res = await fetch(SHEET_API_URL);
         dataMentah = await res.json();
