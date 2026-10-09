@@ -636,9 +636,9 @@ function perbaikiFurigana(teks) {
         const imageWrapper = document.getElementById('image-wrapper');
 
         async function prosesLogin() {
-    let uInput = document.getElementById('input-user').value.trim();
-    let pInput = document.getElementById('input-pass').value.trim();
-    let errText = document.getElementById('pesan-error');
+            let uInput = document.getElementById('input-user').value.trim();
+            let pInput = document.getElementById('input-pass').value.trim();
+            let errText = document.getElementById('pesan-error');
 
             if (!uInput || !pInput) {
                 errText.textContent = "Isi username dan password!";
@@ -647,12 +647,28 @@ function perbaikiFurigana(teks) {
 
             errText.textContent = "Memeriksa...";
 
+            // 1. Ambil atau Buat Device ID
             let deviceId = localStorage.getItem('cbt_device_id');
             if (!deviceId) {
                 deviceId = 'hp_' + Math.random().toString(36).substring(2) + Date.now();
                 localStorage.setItem('cbt_device_id', deviceId);
             }
 
+            // 2. Tangkap Info Perangkat (Nama HP / Browser)
+            let deviceInfo = navigator.userAgent || "Tidak diketahui";
+
+            // 3. Tangkap Alamat IP (menggunakan API publik gratis ipify)
+            let ipAddress = "Tidak diketahui";
+            try {
+                let ipRes = await fetch('https://api.ipify.org?format=json');
+                let ipData = await ipRes.json();
+                ipAddress = ipData.ip;
+            } catch (ipErr) {
+                console.log("Gagal mengambil IP:", ipErr);
+                // Biarkan tetap "Tidak diketahui" jika jaringan error/diblokir
+            }
+
+            // 4. Kirim semua data ke Google Sheets
             try {
                 let res = await fetch(SHEET_API_URL, {
                     method: 'POST',
@@ -661,7 +677,9 @@ function perbaikiFurigana(teks) {
                         action: 'login',
                         user: uInput,
                         pass: pInput,
-                        device_id: deviceId
+                        device_id: deviceId,
+                        device_info: deviceInfo,  // <-- TAMBAHAN BARU
+                        ip_address: ipAddress     // <-- TAMBAHAN BARU
                     })
                 });
                 
