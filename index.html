@@ -873,6 +873,19 @@ function prosesDataSoal(dataMentah) {
     } catch (error) {
         console.error("Gambar gagal dimuat", error);
     }
+    const savedCat = sessionStorage.getItem('cbt_active_category');
+    const savedIdx = sessionStorage.getItem('cbt_active_index');
+    if (savedCat && savedIdx !== null && !viewTest.classList.contains('active')) {
+        activeQuestions = db.filter(q => q.kategori === savedCat.toUpperCase());
+        if (activeQuestions.length > 0) {
+            currentIndex = parseInt(savedIdx) || 0;
+            uiCat.textContent = savedCat;
+            viewHome.classList.remove('active');
+            viewTest.classList.add('active');
+            history.replaceState({ page: 'test' }, '');
+            renderQuestion();
+        }
+    }
 }
 
         // -------------------------------------------------------------
@@ -887,6 +900,8 @@ function prosesDataSoal(dataMentah) {
         }
 
         function goHome() {
+            sessionStorage.removeItem('cbt_active_category');
+            sessionStorage.removeItem('cbt_active_index');
             viewTest.classList.remove('active');
             viewHome.classList.add('active');
         }
@@ -920,6 +935,8 @@ function prosesDataSoal(dataMentah) {
 
         function renderQuestion() {
             const q = activeQuestions[currentIndex];
+            sessionStorage.setItem('cbt_active_category', uiCat.textContent);
+            sessionStorage.setItem('cbt_active_index', currentIndex);
             const total = activeQuestions.length;
             const qId = getQId(q);
             const ansRecord = userAnswers[qId];
