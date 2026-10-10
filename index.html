@@ -910,6 +910,7 @@ function prosesDataSoal(dataMentah) {
             // Perbaikan yang menggunakan view-home dan view-test sesuai HTML kamu
             viewHome.classList.remove('active');
             viewTest.classList.add('active');
+            history.pushState({ page: 'test' }, '');
             renderQuestion();
         }
 
@@ -1175,6 +1176,11 @@ function lompatKeBelumDijawab() {
             }).catch(err => console.log("Gagal mengirim sinyal aktif"));
         }
     }, 30000); // Setiap 2 menit sekali
+    window.addEventListener('popstate', function (event) {
+    if (viewTest && viewTest.classList.contains('active')) {
+        goHome();
+    }
+});
 </script>
 </body>
 </html>
