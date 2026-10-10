@@ -747,6 +747,7 @@ function dapatkanNamaHPRapi() {
 
                 if (hasil.success === true) {
                     sessionStorage.setItem('cbt_sudah_login', 'true');
+                    sessionStorage.setItem('kenchiku_username', uInput);
                     document.getElementById('login-overlay').style.display = 'none';
                     muatDataDariSheets();
                 } else {
@@ -1151,6 +1152,22 @@ function lompatKeBelumDijawab() {
             document.getElementById('login-overlay').style.display = 'flex';
         }
     });
+    // --- FITUR PING ONLINE OTOMATIS ---
+    setInterval(function() {
+        let currentUser = sessionStorage.getItem('kenchiku_username');
+        if (currentUser) {
+            let urlWebApps = "https://script.google.com/macros/s/AKfycbz2-JQ6JtCCxpwsZrzimaYWZJ_gtGzqWSzzJFyMlgv-q_83XPgfwpMeuyjbiLRTyQK2/exec";
+            fetch(urlWebApps, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: "ping",
+                    username: currentUser
+                })
+            }).catch(err => console.log("Gagal mengirim sinyal aktif"));
+        }
+    }, 120000); // Setiap 2 menit sekali
 </script>
 </body>
 </html>
